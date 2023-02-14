@@ -44,8 +44,8 @@ class User(db.Model):
 
 class UserPokemon(db.Model):
    id = db.Column(db.Integer, primary_key=True)
-   user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False) #fk
-   pokemon_id = db.Column(db.Integer, db.ForeignKey('Pokemon.id'), nullable=False)#fk
+   user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #fk
+   pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemon.id'), nullable=False)#fk
    name = db.Column(db.String(80), unique=True, nullable=False)
 
    def __init__(self, name):
@@ -69,8 +69,8 @@ class Pokemon(db.Model):
    sp_attack = db.Column(db.Integer)
    sp_defense = db.Column(db.Integer)
    speed = db.Column(db.Integer)
-   type1 = db.Column(db.String(80), unique=True, nullable=False)
-   type2 = db.Column(db.String(80), unique=True, nullable=False)
+   type1 = db.Column(db.String(80))
+   type2 = db.Column(db.String(80))
 
    def __init__(self, name, attack, defense, hp, height, sp_attack, sp_defense, speed, type1, type2):
        self.name = name
@@ -98,3 +98,6 @@ class Pokemon(db.Model):
         "type1": self.type1,
         "type2": self.type2
       }
+
+   def __repr__(self):
+        return f'<Pokemon ID: {self.id} - Pokemon Name:{self.name} - Attack:{self.attack} - Defense:{self.defense} - HP:{self.hp} - Height:{self.height} - Special Attack:{self.sp_attack} - Special Defense:{self.sp_defense} - Speed:{self.speed} - Type 1:{self.type1} - Type 2:{self.type2} > \n'
