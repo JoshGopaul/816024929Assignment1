@@ -9,7 +9,8 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-
+    
+    
 
     def __init__(self, username, email, password):
        self.username = username
@@ -25,7 +26,34 @@ class User(db.Model):
         "password": self.password
       }
 
+
+    def catch_pokemon(self, pokemon_id, name):
+       new_pokemon = Pokemon.query.filter_by(id=pokemon_id, name=name).first()
+       if new_pokemon:
+          user_pokemon = UserPokemon(user_id=self.id,pokemon_id=pokemon_id,name=name)
+          db.session.add(user_pokemon)
+          db.session.commit()
+          return user_pokemon
+       else:
+          return None
     
+    def release_pokemon(self, pokemon_id, name):
+        my_pokemon = UserPokemon.query.filter_by(id=pokemon_id, user_id=self.id).first()
+        if my_pokemon:
+           db.session.delete(my_pokemon)
+           db.session.commit()
+           return True
+        return None  
+    
+    def rename_pokemon(self, pokemon_id, name):
+       my_pokemon = UserPokemon.query.filter_by(id=pokemon_id, user_id=self.id).first()
+       if my_pokemon:
+          my_pokemon.name = name
+          db.session.add(my_pokemon)
+          db.session.commit()
+          return True
+       return None
+
     def set_password(self, password):
         """Create hashed password."""
         self.password = generate_password_hash(password, method='sha256')
@@ -40,28 +68,39 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username} - {self.email}>'
+    
+    
+
+
+
 
 
 class UserPokemon(db.Model):
    id = db.Column(db.Integer, primary_key=True)
    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #fk
    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemon.id'), nullable=False)#fk
-   name = db.Column(db.String(80), unique=True, nullable=False)
+   name = db.Column(db.String(80), nullable=False)
 
-   def __init__(self, name):
+   def __init__(self, user_id, pokemon_id, name):
        self.name = name
-
+       self.user_id = user_id
+       self.pokemon_id = pokemon_id
 
    def get_json(self):
       return {
         "id": self.id,
-        "name": self.name
+        "user_id": self.user_id,
+        "pokemon_id":self.pokemon_id,
+        "name": self.name,
       }
-   
+
+   def __repr__(self):
+    return f'<Pokemon: {self.id} | Poke Index ID: {self.pokemon_id} | Pokemon Name:{self.name} | User ID: {self.user_id}>'  
+
 
 class Pokemon(db.Model):
    id = db.Column(db.Integer, primary_key=True) 
-   name = db.Column(db.String(80), unique=True, nullable=False)
+   name = db.Column(db.String(80), nullable=False)
    attack = db.Column(db.Integer)
    defense = db.Column(db.Integer)
    hp = db.Column(db.Integer)

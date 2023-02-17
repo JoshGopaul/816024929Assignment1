@@ -35,7 +35,7 @@ def list_users_command():
   print(users)
 
 @app.cli.command('read-pokemon', help = 'Read Pokemon from pokemon.csv')
-def read_pokemon():
+def read_pokemon_command():
 
    with open("./pokemon.csv", 'r') as file:
      data = csv.reader(file)
@@ -61,6 +61,70 @@ def read_pokemon():
 
 
 @app.cli.command('list-pokemon', help = 'list Pokemon from pokemon.csv')
-def list_pokemon():
+def list_pokemon_command():
       pokemon = Pokemon.query.all()
       print(pokemon)
+
+
+@app.cli.command('catch-pokemon', help = 'adds a pokemon to your list')
+@click.argument("user_id", default="1")
+@click.argument("pokemon_id", default="798")
+@click.argument("name", default="Kartana")
+def catch_pokemon_command(user_id,pokemon_id, name):
+      user = User.query.filter_by(id=user_id).first()
+      pokemon = Pokemon.query.filter_by(name=name).first()
+      if pokemon:
+         my_pokemon = user.catch_pokemon(pokemon_id=pokemon_id,name=name)
+         print(f'Pokemon:{my_pokemon.id} {my_pokemon.name} created!')
+      else:
+        f'{name} not found!'
+
+@app.cli.command('get-mypokemon', help = 'List your pokemon')
+@click.argument("user_id", default="1")
+@click.argument("pokemon_id",default="1")
+def get_mypokemon_command(user_id, pokemon_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+       mypokemon = UserPokemon.query.filter_by(user_id=user_id,id=pokemon_id).first()
+       print(mypokemon)
+    else:
+       print("Not Found!")
+ 
+
+@app.cli.command('list-mypokemon', help = 'List your pokemon')
+@click.argument("user_id", default="1")
+def list_mypokemon_command(user_id):
+    data =[]
+    user = User.query.filter_by(id=user_id).first()
+    for my_pokemon in UserPokemon.query.filter_by(user_id=user_id).all():
+        data.append([ my_pokemon.id, my_pokemon.pokemon_id, my_pokemon.name, my_pokemon.user_id])
+    print (tabulate(data, headers=["Pokemon ID", "Poke Index ID", "Pokemon Name", "User ID"]))
+
+
+@app.cli.command('release-mypokemon', help = 'List your pokemon')
+@click.argument("user_id", default="1")
+@click.argument("pokemon_id",default="4")
+@click.argument("name", default="Kartana")
+def release_mypokemon_command(user_id, pokemon_id, name):
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+       my_pokemon = UserPokemon.query.filter_by(user_id=user_id,id=pokemon_id).first()
+       print(my_pokemon)
+       my_pokemon_deleted = user.release_pokemon(pokemon_id=my_pokemon.id, name=my_pokemon.name)
+       print("Pokemon Deleted")
+    else:
+       print("Not Found!")
+
+@app.cli.command('rename-mypokemon', help = 'List your pokemon')
+@click.argument("user_id", default="1")
+@click.argument("pokemon_id",default="4")
+@click.argument("name", default="Karty")
+def release_mypokemon_command(user_id, pokemon_id, name):
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+       my_pokemon = UserPokemon.query.filter_by(user_id=user_id,id=pokemon_id).first()
+       print(my_pokemon)
+       my_pokemon_deleted = user.rename_pokemon(pokemon_id=my_pokemon.id, name=name)
+       print("Pokemon Renamed")
+    else:
+       print("Not Found!")
