@@ -1,4 +1,6 @@
 import os
+import csv
+import wsgi
 from datetime import timedelta
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -66,6 +68,10 @@ def signup_user_view():
 
 ## Read and List Pokemon - start
 
+@app.route('/pokemon', methods=['GET'])
+def get_pokemonlist():
+      pokemons = Pokemon.query.all()
+      return jsonify([pokemon.get_json() for pokemon in pokemons])
 
 
 if __name__ == "__main__":

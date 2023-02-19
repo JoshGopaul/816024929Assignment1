@@ -133,7 +133,7 @@ class Pokemon(db.Model):
         "height": self.height,
         "sp_attack": self.sp_attack,
         "sp_defense": self.sp_defense,
-        "speed": self.sp_speed,
+        "speed": self.speed,
         "type1": self.type1,
         "type2": self.type2
       }
