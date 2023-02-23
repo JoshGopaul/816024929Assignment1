@@ -29,7 +29,7 @@ jwt = JWTManager(app)  #setup flask jwt-e to work with app
 
 @app.route('/')
 def index():
-  return '<h1>Poke API</h1>'
+  return '<h1>Poke API v1.0</h1>'
 
 ## User Creation - start
 def user_login(username, password):
@@ -44,7 +44,7 @@ def user_login_view():
   data = request.json
   token = user_login(data['username'], data['password'])
   if not token:
-    return jsonify(message='bad username/password given'), 401
+    return jsonify(error='bad username/password given'), 401
   return jsonify(access_token=token)
 
 
@@ -58,7 +58,7 @@ def signup_user_view():
   user = User.query.filter_by(username=data['username']).first()
   
   if user:
-    return jsonify(message='username or email already exists'), 400
+    return jsonify(error='username or email already exists'), 400
   
   db.session.add(new_user)
   db.session.commit()
@@ -74,7 +74,7 @@ def get_pokemonlist():
       if pokemons:
          return jsonify([pokemon.get_json() for pokemon in pokemons]), 200
       else:
-         return jsonify(message=f'Pokemon List Unavailable'), 400
+         return jsonify(error=f'Pokemon List Unavailable'), 400
 
 @app.route('/mypokemon', methods=['GET'])
 @jwt_required()
@@ -96,7 +96,7 @@ def save_pokemon():
          return jsonify(message = f'{my_pokemon.name} captured with id: {my_pokemon.id}'), 201
       else:
        id=data['pokemon_id']
-       return jsonify(message = f'{id} is not a valid pokemon id'), 400
+       return jsonify(error = f'{id} is not a valid pokemon id'), 400
 
 @app.route('/mypokemon/<int:id>', methods=['GET'])
 @jwt_required()
@@ -105,9 +105,9 @@ def get_mypokemon(id):
       user = User.query.filter_by(username=username).first()
       pokemon = UserPokemon.query.filter_by(user_id=user.id,id=id).first()
       if pokemon:
-         return jsonify(message = f'id: {pokemon.id}, Name: {pokemon.name}, Species: {pokemon.species}'), 201
+         return jsonify(pokemon.get_json()), 201
       else:
-         return jsonify(message = f'id {id} does not belong to {user.username}'), 401
+         return jsonify(error = f'id {id} invalid or does not belong to {user.username}'), 401
 
 
 @app.route('/mypokemon/<int:id>', methods=['PUT'])
@@ -120,9 +120,9 @@ def rename_mypokemon(id):
       if pokemon:
          temp = pokemon.name
          pokemon = user.rename_pokemon(pokemon_id=id,name=data['name'])
-         return jsonify(message = f'{temp} renamed to {pokemon.name}'), 201
+         return jsonify(message = f'<{temp}> renamed to <{pokemon.name}>'), 201
       else:
-         return jsonify(message = f'id {id} does not belong to {user.username}'), 401
+         return jsonify(error = f'id {id} invalid or does not belong to {user.username}'), 401
 
 @app.route('/mypokemon/<int:id>', methods=['DELETE'])
 @jwt_required()
@@ -135,7 +135,7 @@ def release_mypokemon(id):
          pokemon = user.release_pokemon(pokemon_id=id, name=pokemon.name)
          return jsonify(message = f'{temp} released'), 200
       else:
-         return jsonify(message = f'id {id} does not belong to {user.username}'), 401         
+         return jsonify(error = f'id {id} ivalid does not belong to {user.username}'), 401         
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=81)

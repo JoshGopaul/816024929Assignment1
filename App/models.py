@@ -109,38 +109,41 @@ class Pokemon(db.Model):
    defense = db.Column(db.Integer)
    hp = db.Column(db.Integer)
    height = db.Column(db.Integer)
+   weight = db.Column(db.Integer)
    sp_attack = db.Column(db.Integer)
    sp_defense = db.Column(db.Integer)
    speed = db.Column(db.Integer)
    type1 = db.Column(db.String(80))
    type2 = db.Column(db.String(80))
 
-   def __init__(self, name, attack, defense, hp, height, sp_attack, sp_defense, speed, type1, type2):
+   def __init__(self, name, attack, defence, hp, height, weight, sp_attack, sp_defence, speed, type1, type2):
        self.name = name
        self.attack = attack
-       self.defense = defense
+       self.defence = defence
        self.hp = hp
        self.height = height
+       self.weight = weight
        self.sp_attack = sp_attack
-       self.sp_defense = sp_defense
+       self.sp_defence = sp_defence
        self.speed = speed
        self.type1 = type1
        self.type2 = type2
-
+       
    def get_json(self):
       return {
-        "id": self.id,
+        "pokemon_id": self.id,
         "name": self.name,
         "attack": self.attack,
-        "defense": self.defense,
+        "defence": self.defence,
+        "sp_attack": self.sp_attack,
+        "sp_defence": self.sp_defence,
+        "speed": self.speed,
         "hp": self.hp,
         "height": self.height,
-        "sp_attack": self.sp_attack,
-        "sp_defense": self.sp_defense,
-        "speed": self.speed,
+        "weight": self.weight,
         "type1": self.type1,
         "type2": self.type2
       }
 
    def __repr__(self):
-        return f'<Pokemon ID: {self.id} - Pokemon Name:{self.name} - Attack:{self.attack} - Defense:{self.defense} - HP:{self.hp} - Height:{self.height} - Special Attack:{self.sp_attack} - Special Defense:{self.sp_defense} - Speed:{self.speed} - Type 1:{self.type1} - Type 2:{self.type2} > \n'
+        return f'<Pokemon ID: {self.id} - Pokemon Name:{self.name} - Attack:{self.attack} - Defence:{self.defence} - HP:{self.hp} - Height:{self.height} - Weight:{self.weight} - Special Attack:{self.sp_attack} - Special Defence:{self.sp_defence} - Speed:{self.speed} - Type 1:{self.type1} - Type 2:{self.type2} > \n'

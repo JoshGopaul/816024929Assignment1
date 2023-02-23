@@ -43,11 +43,12 @@ def read_pokemon_command():
      for column in data:
          name=column[30]
          attack=column[19]
-         defense=column[25]
+         defence=column[25]
          hp=column[28]
          height=column[27]
+         weight=column[38]
          sp_attack=column[33]
-         sp_defense=column[34]
+         sp_defence=column[34]
          speed=column[35] 
          type1=column[36] 
          type2=column[37]
@@ -55,7 +56,7 @@ def read_pokemon_command():
          if type2 == '':
             type2 = 'None'
 
-         newpokemon = Pokemon(name=name, attack=attack, defense=defense, hp=hp, height=height, sp_attack=sp_attack, sp_defense=sp_defense,speed=speed, type1=type1, type2=type2)
+         newpokemon = Pokemon(name=name, attack=attack, defence=defence, hp=hp, height=height, weight=weight, sp_attack=sp_attack, sp_defence=sp_defence,speed=speed, type1=type1, type2=type2)
          db.session.add(newpokemon)
          db.session.commit()      
 
@@ -68,8 +69,8 @@ def list_pokemon_command():
 
 @app.cli.command('catch-pokemon', help = 'adds a pokemon to your list')
 @click.argument("user_id", default="1")
-@click.argument("pokemon_id", default="802")
-@click.argument("name", default="Johnny")
+@click.argument("pokemon_id", default="801")
+@click.argument("name", default="Joe")
 def catch_pokemon_command(user_id,pokemon_id, name):
       user = User.query.filter_by(id=user_id).first()
       pokemon = Pokemon.query.filter_by(id=pokemon_id).first()
@@ -96,9 +97,10 @@ def get_mypokemon_command(user_id, pokemon_id):
 def list_mypokemon_command(user_id):
     data =[]
     user = User.query.filter_by(id=user_id).first()
-    for my_pokemon in UserPokemon.query.filter_by(user_id=user_id).all():
-        data.append([ my_pokemon.id, my_pokemon.pokemon_id, my_pokemon.name, my_pokemon.species, my_pokemon.user_id])
-    print (tabulate(data, headers=["Pokemon ID", "Poke Index ID", "Pokemon Name", "Pokemon Species", "User ID"]))
+    if user:
+        for my_pokemon in UserPokemon.query.filter_by(user_id=user_id).all():
+            data.append([ my_pokemon.id, my_pokemon.pokemon_id, my_pokemon.name, my_pokemon.species, my_pokemon.user_id])
+        print (tabulate(data, headers=["Pokemon ID", "Poke Index ID", "Pokemon Name", "Pokemon Species", "User ID"]))
 
 
 @app.cli.command('release-mypokemon', help = 'List your pokemon')
