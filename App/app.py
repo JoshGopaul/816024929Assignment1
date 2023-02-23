@@ -135,7 +135,7 @@ def release_mypokemon(id):
          pokemon = user.release_pokemon(pokemon_id=id, name=pokemon.name)
          return jsonify(message = f'{temp} released'), 200
       else:
-         return jsonify(error = f'id {id} invalid does not belong to {user.username}'), 401         
+         return jsonify(error = f'id {id} invalid or does not belong to {user.username}'), 401         
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=81)
