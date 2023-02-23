@@ -117,14 +117,14 @@ def release_mypokemon_command(user_id, pokemon_id, name):
 
 @app.cli.command('rename-mypokemon', help = 'List your pokemon')
 @click.argument("user_id", default="1")
-@click.argument("pokemon_id",default="4")
-@click.argument("name", default="Karty")
+@click.argument("pokemon_id",default="3")
+@click.argument("name", default="jay")
 def rename_mypokemon_command(user_id, pokemon_id, name):
     user = User.query.filter_by(id=user_id).first()
     if user:
        my_pokemon = UserPokemon.query.filter_by(user_id=user_id,id=pokemon_id).first()
        print(my_pokemon)
-       my_pokemon_deleted = user.rename_pokemon(pokemon_id=my_pokemon.id, name=name)
+       my_pokemon = user.rename_pokemon(pokemon_id=my_pokemon.id, name=name)
        print("Pokemon Renamed")
     else:
        print("Not Found!")

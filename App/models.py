@@ -52,7 +52,7 @@ class User(db.Model):
           my_pokemon.name = name
           db.session.add(my_pokemon)
           db.session.commit()
-          return True
+          return my_pokemon
        return None
 
     def set_password(self, password):

@@ -44,7 +44,7 @@ def user_login_view():
   data = request.json
   token = user_login(data['username'], data['password'])
   if not token:
-    return jsonify(message='bad username or password given'), 401
+    return jsonify(message='bad username/password given'), 401
   return jsonify(access_token=token)
 
 
@@ -58,11 +58,11 @@ def signup_user_view():
   user = User.query.filter_by(username=data['username']).first()
   
   if user:
-    return jsonify(message='username already taken!'), 409
+    return jsonify(message='username or email already exists'), 400
   
   db.session.add(new_user)
   db.session.commit()
-  return jsonify(message=f'User {new_user.id} - {new_user.username} created!'), 201
+  return jsonify(message=f'{new_user.username} created'), 201
 
 ## User Creation - end
 
@@ -71,8 +71,71 @@ def signup_user_view():
 @app.route('/pokemon', methods=['GET'])
 def get_pokemonlist():
       pokemons = Pokemon.query.all()
+      if pokemons:
+         return jsonify([pokemon.get_json() for pokemon in pokemons]), 200
+      else:
+         return jsonify(message=f'Pokemon List Unavailable'), 400
+
+@app.route('/mypokemon', methods=['GET'])
+@jwt_required()
+def get_mypokemonlist():
+      username = get_jwt_identity()
+      user = User.query.filter_by(username=username).first()
+      pokemons = UserPokemon.query.filter_by(user_id=user.id)
       return jsonify([pokemon.get_json() for pokemon in pokemons])
 
+@app.route('/mypokemon', methods=['POST'])
+@jwt_required()
+def save_pokemon():
+      data = request.json
+      username = get_jwt_identity()
+      user = User.query.filter_by(username=username).first()
+      pokemon = Pokemon.query.filter_by(id=data['pokemon_id']).first()
+      if pokemon:
+         my_pokemon = user.catch_pokemon(pokemon_id=data['pokemon_id'],name=data['name'])
+         return jsonify(message = f'{my_pokemon.name} captured with id: {my_pokemon.id}'), 201
+      else:
+       id=data['pokemon_id']
+       return jsonify(message = f'{id} is not a valid pokemon id'), 400
+
+@app.route('/mypokemon/<int:id>', methods=['GET'])
+@jwt_required()
+def get_mypokemon(id):
+      username = get_jwt_identity()
+      user = User.query.filter_by(username=username).first()
+      pokemon = UserPokemon.query.filter_by(user_id=user.id,id=id).first()
+      if pokemon:
+         return jsonify(message = f'id: {pokemon.id}, Name: {pokemon.name}, Species: {pokemon.species}'), 201
+      else:
+         return jsonify(message = f'id {id} does not belong to {user.username}'), 401
+
+
+@app.route('/mypokemon/<int:id>', methods=['PUT'])
+@jwt_required()
+def rename_mypokemon(id):
+      data = request.json
+      username = get_jwt_identity()
+      user = User.query.filter_by(username=username).first()
+      pokemon = UserPokemon.query.filter_by(user_id=user.id, id=id).first()
+      if pokemon:
+         temp = pokemon.name
+         pokemon = user.rename_pokemon(pokemon_id=id,name=data['name'])
+         return jsonify(message = f'{temp} renamed to {pokemon.name}'), 201
+      else:
+         return jsonify(message = f'id {id} does not belong to {user.username}'), 401
+
+@app.route('/mypokemon/<int:id>', methods=['DELETE'])
+@jwt_required()
+def release_mypokemon(id):
+      username = get_jwt_identity()
+      user = User.query.filter_by(username=username).first()
+      pokemon = UserPokemon.query.filter_by(user_id=user.id, id=id).first()
+      if pokemon:
+         temp=pokemon.name
+         pokemon = user.release_pokemon(pokemon_id=id, name=pokemon.name)
+         return jsonify(message = f'{temp} released'), 200
+      else:
+         return jsonify(message = f'id {id} does not belong to {user.username}'), 401         
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=81)
