@@ -45,7 +45,7 @@ def user_login_view():
   token = user_login(data['username'], data['password'])
   if not token:
     return jsonify(error='bad username/password given'), 401
-  return jsonify(access_token=token)
+  return jsonify(access_token=token), 201
 
 
 @app.route('/signup', methods=['POST'])
@@ -82,7 +82,11 @@ def get_mypokemonlist():
       username = get_jwt_identity()
       user = User.query.filter_by(username=username).first()
       pokemons = UserPokemon.query.filter_by(user_id=user.id)
-      return jsonify([pokemon.get_json() for pokemon in pokemons])
+      if pokemons:
+         return jsonify([pokemon.get_json() for pokemon in pokemons]), 201
+      else:
+        return jsonify(error=f'Pokemon List Unavailable'), 400
+
 
 @app.route('/mypokemon', methods=['POST'])
 @jwt_required()
