@@ -68,16 +68,16 @@ def list_pokemon_command():
 
 @app.cli.command('catch-pokemon', help = 'adds a pokemon to your list')
 @click.argument("user_id", default="1")
-@click.argument("pokemon_id", default="798")
-@click.argument("name", default="Kartana")
+@click.argument("pokemon_id", default="802")
+@click.argument("name", default="Johnny")
 def catch_pokemon_command(user_id,pokemon_id, name):
       user = User.query.filter_by(id=user_id).first()
-      pokemon = Pokemon.query.filter_by(name=name).first()
+      pokemon = Pokemon.query.filter_by(id=pokemon_id).first()
       if pokemon:
          my_pokemon = user.catch_pokemon(pokemon_id=pokemon_id,name=name)
-         print(f'Pokemon:{my_pokemon.id} {my_pokemon.name} created!')
+         print(f'Pokemon {my_pokemon.id} - {my_pokemon.name} created!')
       else:
-        f'{name} not found!'
+        print(f'{pokemon_id} is not a valid pokemon id!')
 
 @app.cli.command('get-mypokemon', help = 'List your pokemon')
 @click.argument("user_id", default="1")
@@ -97,8 +97,8 @@ def list_mypokemon_command(user_id):
     data =[]
     user = User.query.filter_by(id=user_id).first()
     for my_pokemon in UserPokemon.query.filter_by(user_id=user_id).all():
-        data.append([ my_pokemon.id, my_pokemon.pokemon_id, my_pokemon.name, my_pokemon.user_id])
-    print (tabulate(data, headers=["Pokemon ID", "Poke Index ID", "Pokemon Name", "User ID"]))
+        data.append([ my_pokemon.id, my_pokemon.pokemon_id, my_pokemon.name, my_pokemon.species, my_pokemon.user_id])
+    print (tabulate(data, headers=["Pokemon ID", "Poke Index ID", "Pokemon Name", "Pokemon Species", "User ID"]))
 
 
 @app.cli.command('release-mypokemon', help = 'List your pokemon')
@@ -119,7 +119,7 @@ def release_mypokemon_command(user_id, pokemon_id, name):
 @click.argument("user_id", default="1")
 @click.argument("pokemon_id",default="4")
 @click.argument("name", default="Karty")
-def release_mypokemon_command(user_id, pokemon_id, name):
+def rename_mypokemon_command(user_id, pokemon_id, name):
     user = User.query.filter_by(id=user_id).first()
     if user:
        my_pokemon = UserPokemon.query.filter_by(user_id=user_id,id=pokemon_id).first()

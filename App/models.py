@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+import random
 db = SQLAlchemy()
 
 
@@ -28,9 +29,9 @@ class User(db.Model):
 
 
     def catch_pokemon(self, pokemon_id, name):
-       new_pokemon = Pokemon.query.filter_by(id=pokemon_id, name=name).first()
+       new_pokemon = Pokemon.query.filter_by(id=pokemon_id).first()
        if new_pokemon:
-          user_pokemon = UserPokemon(user_id=self.id,pokemon_id=pokemon_id,name=name)
+          user_pokemon = UserPokemon(user_id=self.id,pokemon_id=pokemon_id,name=name,species=new_pokemon.name)
           db.session.add(user_pokemon)
           db.session.commit()
           return user_pokemon
@@ -80,11 +81,13 @@ class UserPokemon(db.Model):
    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #fk
    pokemon_id = db.Column(db.Integer, db.ForeignKey('pokemon.id'), nullable=False)#fk
    name = db.Column(db.String(80), nullable=False)
+   species = db.Column(db.String(80), nullable=False)
 
-   def __init__(self, user_id, pokemon_id, name):
+   def __init__(self, user_id, pokemon_id, name, species):
        self.name = name
        self.user_id = user_id
        self.pokemon_id = pokemon_id
+       self.species = species
 
    def get_json(self):
       return {
@@ -92,6 +95,7 @@ class UserPokemon(db.Model):
         "user_id": self.user_id,
         "pokemon_id":self.pokemon_id,
         "name": self.name,
+        "species": self.species
       }
 
    def __repr__(self):
