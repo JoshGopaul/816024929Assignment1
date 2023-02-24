@@ -55,7 +55,11 @@ def read_pokemon_command():
          speed=column[35] 
          type1=column[36] 
          type2=column[37]
-
+         
+         if height =='':
+            height = 0
+         if weight =='':
+            weight =0
          if type2 == '':
             type2 = 'None'
 
@@ -66,8 +70,10 @@ def read_pokemon_command():
 
 @app.cli.command('list-pokemon', help = 'list Pokemon from pokemon.csv')
 def list_pokemon_command():
-      pokemon = Pokemon.query.all()
-      print(pokemon)
+      data =[]
+      for pokemon in Pokemon.query.all():
+          data.append([pokemon.id,pokemon.name,pokemon.attack, pokemon.defence, pokemon.hp, pokemon.height, pokemon.weight, pokemon.sp_attack, pokemon.sp_defence, pokemon.speed, pokemon.type1, pokemon.type2])
+      print (tabulate(data, headers=["Pokemon ID", "Name", "Atack", "Defence", "HP", "Height", "Weight", "SP_Attack", "SP_Defence", "Speed", "Type1", "Type2"]))
 
 
 @app.cli.command('catch-pokemon', help = 'adds a pokemon to your list')

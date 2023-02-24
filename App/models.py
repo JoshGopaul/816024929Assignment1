@@ -108,16 +108,16 @@ class UserPokemon(db.Model):
 class Pokemon(db.Model):
    id = db.Column(db.Integer, primary_key=True) 
    name = db.Column(db.String(80), nullable=False)
-   attack = db.Column(db.Integer)
-   defense = db.Column(db.Integer)
-   hp = db.Column(db.Integer)
-   height = db.Column(db.Integer)
-   weight = db.Column(db.Integer)
-   sp_attack = db.Column(db.Integer)
-   sp_defense = db.Column(db.Integer)
-   speed = db.Column(db.Integer)
-   type1 = db.Column(db.String(80))
-   type2 = db.Column(db.String(80))
+   attack = db.Column(db.Integer, nullable=False)
+   defence = db.Column(db.Integer, nullable=False)
+   hp = db.Column(db.Integer, nullable=False)
+   height = db.Column(db.Integer, nullable=True)
+   weight = db.Column(db.Integer, nullable=True)
+   sp_attack = db.Column(db.Integer, nullable=False)
+   sp_defence = db.Column(db.Integer, nullable=False)
+   speed = db.Column(db.Integer, nullable=False)
+   type1 = db.Column(db.String(80), nullable=False)
+   type2 = db.Column(db.String(80), nullable=True)
 
    def __init__(self, name, attack, defence, hp, height, weight, sp_attack, sp_defence, speed, type1, type2):
        self.name = name
