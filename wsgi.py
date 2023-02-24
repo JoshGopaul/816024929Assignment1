@@ -59,7 +59,7 @@ def read_pokemon_command():
          if height =='':
             height = 0
          if weight =='':
-            weight =0
+            weight = 0
          if type2 == '':
             type2 = 'None'
 
