@@ -1,3 +1,6 @@
+## Josh Gopaul
+## 816024929
+
 import os
 import csv
 import wsgi
@@ -31,7 +34,6 @@ jwt = JWTManager(app)  #setup flask jwt-e to work with app
 def index():
   return '<h1>Poke API v1.0</h1>'
 
-## User Creation - start
 def user_login(username, password):
   user = User.query.filter_by(username=username).first()
   if user and user.check_password(password):
@@ -52,9 +54,6 @@ def user_login_view():
 def signup_user_view():
   data = request.json
   new_user = User(data['username'], data['email'], data['password'])
-
-  #prevent regular user sharing username with admin
-  #admin = Admin.query.filter_by(username=data['username']).first()
   user = User.query.filter_by(username=data['username']).first()
   
   if user:
@@ -64,9 +63,6 @@ def signup_user_view():
   db.session.commit()
   return jsonify(message=f'{new_user.username} created'), 201
 
-## User Creation - end
-
-## Read and List Pokemon - start
 
 @app.route('/pokemon', methods=['GET'])
 def get_pokemonlist():
